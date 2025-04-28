@@ -1,28 +1,59 @@
+const textInput = document.getElementById('text-input');
+const speakBtn = document.getElementById('speak-btn');
+const voiceSelect = document.getElementById('voice-select');
+const progressBar = document.getElementById('progress-bar');
+
 let speech = new SpeechSynthesisUtterance();
-
-let button = document.querySelector('button');
-
-let selectVoice = document.querySelector('select')
-
 let voices = [];
 
-button.addEventListener('click', () => {
-
-    speech.text = document.querySelector('textarea').value;
-    window.speechSynthesis.speak(speech);
-
-})
-
-window.speechSynthesis.onvoiceschanged = () => {
-    voices = window.speechSynthesis.getVoices();
-    speech.voice = voices[0];
-    voices.forEach((voice, index) => (selectVoice.options[index] = new Option (voice.name, index)));
+function populateVoices() {
+    voices = speechSynthesis.getVoices();
+    voiceSelect.innerHTML = '';
+    voices.forEach((voice, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = `${voice.name} (${voice.lang})`;
+        voiceSelect.appendChild(option);
+    });
 }
 
+// Corrigir bug de não carregar vozes
+populateVoices();
+if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = populateVoices;
+}
 
-selectVoice.addEventListener('change', () => {
+voiceSelect.addEventListener('change', () => {
+    speech.voice = voices[voiceSelect.value];
+});
 
-    speech.voice = voices[selectVoice.value];
+speakBtn.addEventListener('click', () => {
+    if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+    }
 
+    speech.text = textInput.value;
+    speech.voice = voices[voiceSelect.value];
+    speech.volume = 1;
+    speech.rate = 1;
+    speech.pitch = 1;
 
+    progressBar.style.width = '0%';
+    speechSynthesis.speak(speech);
+
+    // Deixa o botão animado enquanto fala
+    speakBtn.classList.add('speaking');
+
+    // Barra de progresso fake (não é 100% exata mas é visual)
+    let progress = 0;
+    const interval = setInterval(() => {
+        if (!speechSynthesis.speaking) {
+            clearInterval(interval);
+            progressBar.style.width = '100%';
+            speakBtn.classList.remove('speaking');
+        } else {
+            progress = Math.min(progress + 1, 95);
+            progressBar.style.width = progress + '%';
+        }
+    }, 100);
 });

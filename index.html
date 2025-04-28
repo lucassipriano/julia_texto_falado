@@ -8,25 +8,24 @@
 </head>
 <body>
 
-    <main>
+<main>
 
-        <h1>Julia fala o que você escreve!</h1>
+    <h1>Julia fala o que você escreve!</h1>
 
-        <textarea placeholder="Escreva alguma coisa aqui..."></textarea>
+    <textarea id="text-input" placeholder="Escreva alguma coisa aqui..."></textarea>
 
-        <div class="row">
+    <div class="row">
+        <select id="voice-select"></select>
+        <button id="speak-btn">Ouvir</button>
+    </div>
 
-            <select>
-            
-            </select>
-            <button>Escultar</button>
-        </div>
+    <div class="progress-container">
+        <div id="progress-bar"></div>
+    </div>
 
+</main>
 
+<script src="script.js"></script>
 
-    </main>
-
-    <script src="script.js"></script>
-    
 </body>
 </html>
